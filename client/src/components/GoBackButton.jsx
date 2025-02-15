@@ -13,10 +13,7 @@ const GoBackButton = () => {
     <Button
       onClick={() => navigate(-1)}
       variant='link'
-      leftIcon={<ChevronLeftIcon />}
-      colorScheme='telegram'
-      fontWeight='normal'
-      mb='7'
+      leftIcon={<ChevronLeftIcon boxSize={5} />}
     >
       {t("global.goBack")}
     </Button>

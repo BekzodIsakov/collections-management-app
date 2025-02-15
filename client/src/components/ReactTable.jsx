@@ -8,6 +8,7 @@ import {
   Td,
   chakra,
   TableContainer,
+  Box,
 } from "@chakra-ui/react";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import {
@@ -45,21 +46,30 @@ const ReactTable = ({ data, columns, onRowSelect, selectedRow, getRowId }) => {
                 <Th
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
+                  cursor={"pointer"}
+                  py={2}
                 >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-
-                  <chakra.span pl='4'>
-                    {header.column.getIsSorted() ? (
-                      header.column.getIsSorted() === "desc" ? (
-                        <TriangleDownIcon aria-label='sorted descending' />
-                      ) : (
-                        <TriangleUpIcon aria-label='sorted ascending' />
-                      )
-                    ) : null}
-                  </chakra.span>
+                  <Box
+                    display={"flex"}
+                    py={3}
+                    justifyContent={"space-between"}
+                    alignItems={"center"}
+                    height={12}
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                    <chakra.span>
+                      {header.column.getIsSorted() ? (
+                        header.column.getIsSorted() === "desc" ? (
+                          <TriangleDownIcon aria-label='sorted descending' />
+                        ) : (
+                          <TriangleUpIcon aria-label='sorted ascending' />
+                        )
+                      ) : null}
+                    </chakra.span>
+                  </Box>
                 </Th>
               ))}
             </Tr>

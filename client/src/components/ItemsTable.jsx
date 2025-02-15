@@ -169,38 +169,35 @@ const ItemsTable = ({ collectionId }) => {
   }, [collection, i18n.resolvedLanguage]);
 
   return (
-    <Box mt='5'>
+    <Box mt={5}>
       <Stack
-        spacing='1'
+        spacing={1}
         direction={{ base: "column", md: "row" }}
         justifyContent={"space-between"}
         alignItems={{ base: "flex-start", md: "center" }}
         mb={3}
       >
-        <Heading fontSize={"lg"} my='3'>
+        <Heading fontSize={"lg"} my={3}>
           {t("global.collectionItems")}
         </Heading>
         <Wrap>
           <Button
             leftIcon={<AddIcon />}
-            size='xs'
-            colorScheme='telegram'
+            colorScheme='linkedin'
             onClick={openCreateModal}
           >
             {t("global.newItem")}
           </Button>
           <Button
             leftIcon={<EditIcon />}
-            size='xs'
             isDisabled={!selectedItemId}
-            colorScheme='telegram'
+            colorScheme='gray'
             onClick={openEditModal}
           >
             {t("global.edit")}
           </Button>
           <Button
             leftIcon={<DeleteIcon />}
-            size='xs'
             isDisabled={!selectedItemId}
             colorScheme='red'
             onClick={openDeleteModal}

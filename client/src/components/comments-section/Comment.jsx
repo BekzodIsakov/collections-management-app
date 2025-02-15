@@ -130,7 +130,7 @@ const Comment = ({
             Reply
           </Button>
           {authorId === user?.id && (
-            <HStack spacing='4' ml='3'>
+            <HStack spacing={4} ml={3}>
               <Button
                 variant='unstyled'
                 fontSize='xs'
@@ -139,13 +139,13 @@ const Comment = ({
                 height='max-content'
                 minWidth='max-content'
                 leftIcon={<EditIcon />}
-                iconSpacing='1'
+                iconSpacing={1}
                 onClick={() => setEditMode(true)}
               >
                 Edit
               </Button>
               <Popover>
-                {({ _, onClose }) => (
+                {({ onClose }) => (
                   <>
                     <PopoverTrigger>
                       <Button
@@ -156,7 +156,7 @@ const Comment = ({
                         height='max-content'
                         minWidth='max-content'
                         leftIcon={<DeleteIcon />}
-                        iconSpacing='1'
+                        iconSpacing={1}
                       >
                         Delete
                       </Button>
