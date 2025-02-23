@@ -6,16 +6,17 @@ const router = express.Router();
 const users = require("../controllers/users");
 
 router.post("/users/signup", users.signUpUser);
-
 router.post("/users/signin", users.signInUser);
+
+router.get("/users/:id", users.fetchUser);
+router.patch("/users/:id", checkAuth, checkIsAdmin, users.updateUser);
 
 router.get("/users/me", checkAuth, (req, res) => {
   res.send(req.user);
 });
 
-router.get("/users/:id", checkAuth, users.fetchUser);
 
-router.patch("/users/me", checkAuth, checkIsAdmin);
+// router.patch("/users/me", checkAuth, checkIsAdmin);
 
 router.patch("/users/me", checkAuth, checkIsAdmin, users.updateMe);
 
@@ -25,7 +26,6 @@ router.post("/users/signout", checkAuth, users.signOutUser);
 
 router.get("/users", checkAuth, checkIsAdmin, users.fetchUsers);
 
-router.patch("/users/:id", checkAuth, checkIsAdmin, users.updateUser);
 
 router.delete("/users/:id", checkAuth, users.deleteUser);
 

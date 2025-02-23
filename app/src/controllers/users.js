@@ -35,8 +35,10 @@ const signInUser = async (req, res) => {
   try {
     const user = await User.findByCredentials(email, password);
 
-    if (user.isBlocked)
+    if (user.isBlocked) {
       return res.status(403).send({ message: "User is blocked!" });
+    }
+    
     const token = await user.generateAuthToken();
     res.send({ user, token });
   } catch (error) {
