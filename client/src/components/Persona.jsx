@@ -13,23 +13,19 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { useAuth } from "@/providers/authProvider";
-import { useUserSignOut } from "../hooks/user";
+import { useAuth } from "../context/Auth";
+import { useMutation } from "@tanstack/react-query";
 
 const Persona = () => {
-  const { setToken, setUser, user } = useAuth();
-  const { loading, signOut } = useUserSignOut();
-
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
-
   const { t } = useTranslation();
 
-  const handleSignOut = () => {
-    signOut();
-    navigate("/");
-    setToken(null);
-    setUser(null);
-  };
+  const { isPending, mutate } = useMutation({
+    mutationKey: ["signout_user"],
+    mutationFn: logout,
+    onSuccess: () => navigate("/"),
+  });
 
   return (
     <Popover placement='bottom-end' gutter={14}>
@@ -40,9 +36,9 @@ const Persona = () => {
             whiteSpace='nowrap'
             display={{ base: "none", sm: "block" }}
           >
-            {user.name.split(' ')[0]}
+            {user.name.split(" ")[0]}
           </Text>
-          <Avatar name={user.name} size='sm' />
+          <Avatar name={user.name} size='sm' src={"/profile-img.jpg"} />
         </HStack>
       </PopoverTrigger>
 
@@ -52,18 +48,17 @@ const Persona = () => {
             <Stack gap='0'>
               <Text fontWeight='medium'>{user.name}</Text>
               <Text color='fg.muted' textStyle='sm'>
-                {/* {user.email} */}
-                john.mason@example.com
+                {user.email}
               </Text>
             </Stack>
-            <Avatar name={user.name} size='md' src={user.avatar} />
+            <Avatar name={user.name} size='md' src={"/profile-img.jpg"} />
           </HStack>
         </PopoverBody>
         <PopoverFooter>
           <Stack align={"end"}>
             <Button
-              onClick={handleSignOut}
-              isLoading={loading}
+              onClick={mutate}
+              isLoading={isPending}
               loadingText={t("auth.signOut")}
               colorScheme='red'
               variant='outline'

@@ -24,13 +24,18 @@
   "userPage": {
     "myCollections": "My collections"
   },
+  "collections": {
+    "create": "Create",
+    "not_created": "New collection failed to create!",
+    "created": "New collection created!"
+  },
   "notFoundPage": {
     "pageNotFound": "Page you are looking for could not be found",
     "goToMainPage": "Go to main page"
   },
   "nav": {
     "mainPage": "Main",
-    "myPage": "My page",
+    "profile": "Profile",
     "usersPage": "Users",
     "aboutPage": "About"
   },

@@ -19,19 +19,24 @@ import {
   HStack,
 } from "@chakra-ui/react";
 
-import { useAuth } from "@/providers/authProvider";
-import { useUserSignUp } from "@/hooks/user";
-import { LanguageSelect, ThemeSwitcher } from "@/components";
-import useForm from "@/hooks/useForm";
+import { useAuth } from "../context/Auth";
+import { LanguageSelect, ThemeSwitcher } from "../components";
+import { useForm } from "../hooks/useForm";
+import { useMutation } from "@tanstack/react-query";
 
 const SignUp = () => {
-  const { data, loading, errorMessage, onSignUp } = useUserSignUp();
-  const { setToken, setUser } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+
+  const { signUp } = useAuth();
   const [values, handleChange] = useForm({ name: "", email: "", password: "" });
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const [showPassword, setShowPassword] = useState(false);
+  const { mutate, isPending, error } = useMutation({
+    mutationKey: ["user_singout"],
+    mutationFn: (crendentails) => signUp(crendentails),
+    onSuccess: () => navigate("/"),
+  });
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -41,24 +46,8 @@ const SignUp = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSignUp({
-      name,
-      email,
-      password,
-    });
+    mutate({ name, email, password });
   };
-
-  useEffect(() => {
-    if (data) {
-      setToken(data.token);
-      setUser({
-        name: data.user.name,
-        isAdmin: data.user.isAdmin,
-        id: data.user._id,
-      });
-      navigate("/", { replace: true });
-    }
-  }, [data, setToken, setUser, navigate]);
 
   return (
     <Flex
@@ -124,10 +113,10 @@ const SignUp = () => {
                 </InputGroup>
               </FormControl>
               <Stack spacing={3}>
-                <Text color='red.400'>{errorMessage}</Text>
+                {error && <Text color='red.400'>{error.message}</Text>}
                 <Button
                   type='submit'
-                  isLoading={loading}
+                  isLoading={isPending}
                   loadingText='Submitting'
                   colorScheme='blue'
                 >

@@ -1,5 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { useAuth } from "../providers/authProvider";
+
+import { useAuth } from "../context/Auth";
 import { ProtectedRoute } from "./ProtectedRoute";
 import SignIn from "../pages/SignIn";
 import SignUp from "../pages/SignUp";
@@ -10,7 +11,7 @@ import CollectionManagementPage from "../pages/CollectionManagementPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import UsersPage from "../pages/UsersPage";
 import UserPage from "../pages/UserPage";
-import CurrentUserProvider from "../providers/currentUserProvider";
+import CurrentUserProvider from "../context/currentUserProvider";
 import ItemPage from "../pages/ItemPage";
 import AboutPage from "../pages/AboutPage";
 
@@ -27,11 +28,11 @@ const Routes = () => {
       ),
       children: [
         {
-          path: "/me",
+          path: "/profile",
           element: <UserPage />,
         },
         {
-          path: "/me/collections/:collectionId",
+          path: "/profile/collections/:collectionId",
           element: <CollectionManagementPage />,
         },
       ],

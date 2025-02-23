@@ -1,5 +1,5 @@
 export * from "./header/Header";
-import CollectionEditModal from "./CollectionEditModal";
+// import CollectionEditModal from "../pages/collection-page/components/CollectionEditModal";
 import ItemsTable from "./ItemsTable";
 export * from "./ThemeSwitcher";
 import CustomList from "./CustomList";
@@ -11,11 +11,11 @@ import EditItemModal from "./ItemEditModal";
 import ItemViewModal from "./ItemViewModal";
 import LanguageSelect from "./LanguageSelect";
 import Link from "./Link";
-import CreateCollectionModal from "./CreateCollectionModal";
+// import CreateCollectionModal from "../pages/collection-page/components/CreateCollectionModal";
 import UserPage from "../pages/UserPage";
 import SVG from "./SVG";
 import CreateItemModal from "./CreateItemModal";
-import OptionalFieldGenerator from "./OptionalFieldGenerator";
+// import OptionalFieldGenerator from "../pages/collection-page/components/OptionalFieldGenerator";
 import ReactTable from "./ReactTable";
 import SearchButton from "./SearchButton";
 import SearchModal from "./SearchModal";
@@ -26,10 +26,10 @@ import Tags from "./Tags";
 import Spinner from "./Spinner";
 
 export {
-  CollectionEditModal,
+  // CollectionEditModal,
   ItemsTable,
   Link,
-  CreateCollectionModal,
+  // CreateCollectionModal,
   SVG,
   CreateItemModal,
   SearchModal,
@@ -42,7 +42,7 @@ export {
   ItemViewModal,
   LanguageSelect,
   UserPage,
-  OptionalFieldGenerator,
+  // OptionalFieldGenerator,
   ReactTable,
   SearchButton,
   TagsCloud,

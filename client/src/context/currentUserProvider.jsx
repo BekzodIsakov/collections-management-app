@@ -1,9 +1,9 @@
-import React from "react";
+import { createContext, useState, useContext } from "react";
 
-const CurrentUserContext = React.createContext(null);
+const CurrentUserContext = createContext(null);
 
 const CurrentUserProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = React.useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   return (
     <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
@@ -12,6 +12,6 @@ const CurrentUserProvider = ({ children }) => {
   );
 };
 
-export const useCurrentUser = () => React.useContext(CurrentUserContext);
+export const useCurrentUser = () => useContext(CurrentUserContext);
 
 export default CurrentUserProvider;

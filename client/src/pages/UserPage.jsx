@@ -1,4 +1,4 @@
-import React from "react";
+// import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Avatar,
@@ -7,102 +7,118 @@ import {
   Button,
   HStack,
   Heading,
-  ListItem,
-  Stack,
   Text,
-  UnorderedList,
-  Wrap,
-  WrapItem,
+  VStack,
   useDisclosure,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
-
-import { Link, CreateCollectionModal, Spinner } from "@/components";
-import { useFetchUser } from "@/hooks/user";
-import { useCurrentUser } from "@/providers/currentUserProvider";
-
 import { useQuery } from "@tanstack/react-query";
+
+import { Spinner } from "@/components";
+import { CreateCollectionModal } from "./collection-page/components/CreateCollectionModal";
 import { fetchUserCollections } from "../utils/data";
+import { CollectionsGrid } from "./main-page/components/CollectionsGrid";
+import { useAuth } from "../context/Auth";
 
 const UserPage = () => {
   const { t } = useTranslation();
-
-  const { currentUser, setCurrentUser } = useCurrentUser();
-
-  const { user, fetchUser } = useFetchUser();
-
+  // const { currentUser, setCurrentUser } = useCurrentUser();
+  // const { user, fetchUser } = useFetchUser();
+  const { user } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // const {
-  //   loading: userCollectionsLoading,
-  //   collections: userCollections,
-  //   fetchUserCollections,
-  // } = useFetchUserCollections();
+  // const {data: user, isPending} = useQueries({
+  //   queryKey: ["fetch_user"],
+  //   queryFn: () => fetchUser(user.id),
+  // });
 
-  const { isPending, isError, error, data, refetch } = useQuery({
-    queryKey: ["use_collections", currentUser?._id],
-    queryFn: () => fetchUserCollections(currentUser?._id),
-    enabled: !!currentUser?._id,
+  // async function fetchUser(id) {
+  //   try {
+  //     const result = await axios(`${import.meta.env.VITE_URL}/users/${id}`);
+  //     return result.data;
+  //   } catch (error) {
+  //     console.error("Error fetching user.", error);
+  //   }
+  // }
+
+  const { isError, error, data, refetch, isLoading, isFetching } = useQuery({
+    queryKey: ["use_collections", user?._id],
+    queryFn: () => fetchUserCollections(user?._id),
+    enabled: !!user._id,
   });
 
-  React.useEffect(() => {
-    fetchUser();
-  }, [location]);
+  const collections = data?.data;
+  console.log({ collections });
 
-  React.useEffect(() => {
-    if (currentUser) fetchUserCollections(currentUser._id);
-  }, [currentUser]);
+  // useEffect(() => {
+  //   fetchUser();
+  // }, [fetchUser]);
 
-  React.useEffect(() => {
-    if (user) {
-      setCurrentUser(user);
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (currentUser) fetchUserCollections(currentUser._id);
+  // }, [currentUser]);
 
-  if (isPending) {
-    return <Spinner />;
-  }
+  // useEffect(() => {
+  //   if (user) {
+  //     setCurrentUser(user);
+  //   }
+  // }, [user, setCurrentUser]);
 
   if (isError) {
-    return <Text color={"orange"}>{error}</Text>;
+    return <Text colorScheme='red'>{error}</Text>;
   }
 
   if (user) {
     return (
       <>
-        <Box>
-          <HStack mb={7}>
-            <Avatar name={user.name} alt={user.name} mr={2} />
-            <Box>
-              <HStack>
-                <Heading as='h1' size='md' mr={1}>
+        <div>
+          <HStack spacing={8} align='start' mb={16}>
+            <Avatar size='xl' src={"/profile-img.jpg"} name={user.name} />
+            <VStack alignItems={"start"} spacing={3}>
+              <div>
+                <Heading as={"h1"} fontSize='2xl' fontWeight='bold'>
                   {user.name}
                 </Heading>
-                {user.isAdmin && <Badge colorScheme={"orange"}>Admin</Badge>}
-              </HStack>
-              <Text color='gray'>{user.email}</Text>
-            </Box>
+                <Text color='gray.500'>{user.email}</Text>
+              </div>
+
+              <Badge
+                colorScheme={user.isAdmin ? "red" : "blue"}
+                px={2}
+                py={1}
+                borderRadius='full'
+                textTransform={"uppercase"}
+              >
+                {user.isAdmin ? "admin" : "user"}
+              </Badge>
+            </VStack>
           </HStack>
 
           <Box>
-            <Stack direction={"row"} justifyContent={"space-between"}>
-              <Wrap spacing={"3"} mb='4' align='center'>
-                <WrapItem>
-                  <Heading size='md'>{t("userPage.myCollections")}</Heading>
-                </WrapItem>
-                <WrapItem>{isPending && <Spinner size='sm' />}</WrapItem>
-              </Wrap>
+            <HStack
+              wrap={"wrap"}
+              alignItems={"center"}
+              justifyContent={"space-between"}
+              mb={6}
+            >
+              <Box spacing={3} align='center'>
+                <HStack spacing={4}>
+                  <Heading fontSize='3xl' textAlign={"left"}>
+                    {t("userPage.myCollections")}
+                  </Heading>
+                  {isFetching && <Spinner />}
+                </HStack>
+              </Box>
               <Button
-                size='sm'
                 onClick={onOpen}
-                colorScheme='telegram'
+                colorScheme='linkedin'
                 leftIcon={<AddIcon />}
               >
                 {t("global.newCollection")}
               </Button>
-            </Stack>
+            </HStack>
 
-            <UnorderedList>
+            {/* <UnorderedList>
               {data?.data.map((collection) => (
                 <ListItem key={collection._id} mb={2}>
                   <Link to={`collections/${collection._id}`}>
@@ -110,9 +126,10 @@ const UserPage = () => {
                   </Link>
                 </ListItem>
               ))}
-            </UnorderedList>
+            </UnorderedList> */}
+            <CollectionsGrid isLoading={isLoading} collections={collections} />
           </Box>
-        </Box>
+        </div>
         {isOpen && (
           <CreateCollectionModal
             isOpen={isOpen}

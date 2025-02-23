@@ -18,7 +18,7 @@ const CollectionCard = ({
   items,
 }) => {
   return (
-    <Card boxShadow={"xl"} border={"1px solid lightgray"}>
+    <Card boxShadow={"md"} border={"1px solid lightgray"}>
       <CardBody>
         <Image
           src={imageUrl ?? "https://picsum.photos/seed/picsum/200?blur"}

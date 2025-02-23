@@ -18,21 +18,59 @@ import {
   Link as ChakraLink,
   HStack,
 } from "@chakra-ui/react";
+import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
 
-import { useAuth } from "@/providers/authProvider";
-import { useUserSignIn } from "@/hooks/user";
+import { useAuth } from "../context/Auth";
 import { LanguageSelect, ThemeSwitcher } from "@/components";
-import useForm from "@/hooks/useForm";
+import { useForm } from "../hooks/useForm";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
+
   const [values, handleChange] = useForm({ email: "", password: "" });
-  const { setToken, setUser } = useAuth();
-  const { data, loading, errorMessage, onSignIn } = useUserSignIn();
+  const { login } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const { email, password } = values;
+
+  const {
+    // data,
+    mutate,
+    isPending,
+    error,
+  } = useMutation({
+    mutationKey: ["user_login"],
+    mutationFn: (credentials) => login(credentials),
+    onSuccess: () => navigate("/"),
+  });
+
+  // useEffect(() => {
+  //   if (data) {
+  //     const { token, user } = data.data;
+  //     setToken(token);
+  //     setUser({
+  //       id: user._id,
+  //       ...user,
+  //     });
+  //     navigate("/", { replace: true });
+  //   }
+  // }, [data, setToken, setUser, navigate]);
+
+  // async function handleLogin() {
+  //   try {
+  //     return await axios.post(
+  //       `${import.meta.env.VITE_URL}/users/signin`,
+  //       { email, password },
+  //       {
+  //         headers: { "Content-Type": "application/json" },
+  //       }
+  //     );
+  //   } catch (error) {
+  //     console.error("Error logging in user", error);
+  //   }
+  // }
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -40,20 +78,8 @@ const SignIn = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSignIn({ email: values.email, password: values.password });
+    mutate({ email, password });
   };
-
-  useEffect(() => {
-    if (data) {
-      setToken(data.token);
-      setUser({
-        name: data.user.name,
-        isAdmin: data.user.isAdmin,
-        id: data.user._id,
-      });
-      navigate("/", { replace: true });
-    }
-  }, [data, setToken, setUser, navigate]);
 
   return (
     <Flex
@@ -110,10 +136,10 @@ const SignIn = () => {
                 </InputGroup>
               </FormControl>
               <Stack spacing={3}>
-                <Text color='red.400'>{errorMessage}</Text>
+                <Text color='red.400'>{error}</Text>
                 <Button
                   type='submit'
-                  isLoading={loading}
+                  isLoading={isPending}
                   loadingText='Submitting'
                   colorScheme='blue'
                 >

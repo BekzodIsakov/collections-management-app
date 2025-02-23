@@ -27,12 +27,8 @@ import remarkGfm from "remark-gfm";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 
-import {
-  CollectionEditModal,
-  DeleteModal,
-  ItemsTable,
-  Spinner,
-} from "@/components";
+import { DeleteModal, ItemsTable, Spinner } from "@/components";
+import { CollectionEditModal } from "./collection-page/components/CollectionEditModal";
 import { useDeleteCollectionImage } from "@/hooks/collections";
 
 import { useQuery, useMutation } from "@tanstack/react-query";

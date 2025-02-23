@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
@@ -15,15 +15,13 @@ import {
 
 const FIELD_TYPES = ["number", "text", "textarea", "checkbox", "date"];
 
-const OptionalFieldGenerator = ({
+export const OptionalFieldGenerator = ({
   optionalItemFields,
   setOptionalItemFields,
 }) => {
-  const [createdFields, setCreatedFields] = React.useState({});
-  const [currentFieldName, setCurrentFieldName] = React.useState("");
-  const [selectedFieldType, setSelectedFieldType] = React.useState(
-    FIELD_TYPES[0]
-  );
+  const [createdFields, setCreatedFields] = useState({});
+  const [currentFieldName, setCurrentFieldName] = useState("");
+  const [selectedFieldType, setSelectedFieldType] = useState(FIELD_TYPES[0]);
 
   const { t } = useTranslation();
 
@@ -45,9 +43,9 @@ const OptionalFieldGenerator = ({
   }
 
   function removeField(idx) {
-    const _optionalItemFields = [...optionalItemFields];
-    _optionalItemFields.splice(idx, 1);
-    setOptionalItemFields(_optionalItemFields);
+    const updatedOptionalFields = [...optionalItemFields];
+    updatedOptionalFields.splice(idx, 1);
+    setOptionalItemFields(updatedOptionalFields);
   }
 
   let optionalFields = null;
@@ -63,7 +61,7 @@ const OptionalFieldGenerator = ({
     ));
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     const _createdFields = {};
     FIELD_TYPES.map((type) => {
       _createdFields[type] = 0;
@@ -75,11 +73,11 @@ const OptionalFieldGenerator = ({
 
   return (
     <Box>
-      <Heading as='h3' size='md' mb='4'>
+      <Heading as='h3' size='md' mb={4}>
         {t("global.optionalFields")}
       </Heading>
 
-      <FormControl mb='3'>
+      <FormControl mb={3}>
         <Select onChange={handleOnSelect} value={selectedFieldType}>
           {FIELD_TYPES.map((type) => (
             <option key={type} disabled={createdFields[type] === 3}>
@@ -89,20 +87,16 @@ const OptionalFieldGenerator = ({
         </Select>
       </FormControl>
 
-      <FormControl mb='3'>
+      <FormControl mb={3}>
         <Input
           value={currentFieldName}
           onChange={(e) => setCurrentFieldName(e.target.value)}
         />
       </FormControl>
 
-      <Button onClick={createOptionalField} size={"sm"}>
-        {t("global.add")}
-      </Button>
+      <Button onClick={createOptionalField}>{t("global.add")}</Button>
 
-      <Wrap mt='3'>{optionalFields}</Wrap>
+      <Wrap mt={3}>{optionalFields}</Wrap>
     </Box>
   );
 };
-
-export default OptionalFieldGenerator;

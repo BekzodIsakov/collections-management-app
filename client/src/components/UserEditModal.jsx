@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -15,65 +15,93 @@ import {
   ModalOverlay,
   Switch,
 } from "@chakra-ui/react";
-import { useFetchUser, useUpdateUser } from "@/hooks/user";
-import { useAuth } from "@/providers/authProvider";
-import { Spinner } from "@/components";
+
+// import { useFetchUser, useUpdateUser } from "../hooks/user";
+import { useAuth } from "../context/Auth";
+import { Spinner } from "./index";
+import { useMutation } from "@tanstack/react-query";
+import axios from "../../api/axios";
 
 const UserEditModal = ({ isOpen, onClose, userId, users, setUsers }) => {
-  const [name, setName] = React.useState("");
-  const [isAdmin, setIsAdmin] = React.useState(false);
-  const [isBlocked, setIsBlocked] = React.useState(false);
+  const [name, setName] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
 
-  const { setUser, user } = useAuth();
-
+  const { user } = useAuth();
   const { t } = useTranslation();
-
-  const { loading, user: currentUser, fetchUser } = useFetchUser();
-
+  // const { loading, user: currentUser, fetchUser } = useFetchUser();
   const navigate = useNavigate();
 
-  const {
-    loading: updatingUser,
-    user: updatedUser,
-    updateUser,
-  } = useUpdateUser();
+  const { mutate, isPending, data } = useMutation({
+    mutationKey: ["update_user"],
+    mutationFn: (updates) => updateUser(updates),
+    onSuccess: () => {
+      onClose();
+    },
+  });
+
+  async function updateUser(userId, updates) {
+    try {
+      const response = await axios.patch(`/users/${userId}`, updates, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Error updating user.", error);
+    }
+  }
+
+  // const {
+  //   loading: updatingUser,
+  //   user: updatedUser,
+  //   updateUser,
+  // } = useUpdateUser();
 
   function handleOnSubmit(e) {
     e.preventDefault();
-    updateUser(userId, { name, isAdmin, isBlocked });
+    mutate(userId, { name, isAdmin, isBlocked });
   }
 
-  React.useEffect(() => {
-    if (userId) fetchUser(userId);
-  }, [userId]);
+  // useEffect(() => {
+  //   if (userId) fetchUser(userId);
+  // }, [userId]);
 
-  React.useEffect(() => {
-    if (currentUser) {
-      setName(currentUser.name);
-      setIsAdmin(currentUser.isAdmin);
-      setIsBlocked(currentUser.isBlocked);
-    }
-  }, [currentUser]);
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     setName(currentUser.name);
+  //     setIsAdmin(currentUser.isAdmin);
+  //     setIsBlocked(currentUser.isBlocked);
+  //   }
+  // }, [currentUser]);
 
-  React.useEffect(() => {
-    if (updatedUser) {
-      const _users = users.map((user) => {
-        return user._id === updatedUser._id ? { ...updatedUser } : user;
-      });
+  function updateUsers() {
+    const updatedUser = data;
 
-      if (user.id === updatedUser._id) {
-        setUser({
-          name: updatedUser.name,
-          isAdmin: updatedUser.isAdmin,
-          id: updatedUser._id,
-        });
-        navigate("/");
-      }
+    const updatedUsers = users.map((user) => {
+      return user._id === updatedUser._id ? { ...updatedUser } : user;
+    });
+  }
 
-      setUsers(_users);
-      onClose();
-    }
-  }, [updatedUser]);
+  // useEffect(() => {
+  //   if (updatedUser) {
+  //     const _users = users.map((user) => {
+  //       return user._id === updatedUser._id ? { ...updatedUser } : user;
+  //     });
+
+  //     if (user.id === updatedUser._id) {
+  //       setUser({
+  //         name: updatedUser.name,
+  //         isAdmin: updatedUser.isAdmin,
+  //         id: updatedUser._id,
+  //       });
+  //       navigate("/");
+  //     }
+
+  //     setUsers(_users);
+  //     onClose();
+  //   }
+  // }, [updatedUser]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -82,7 +110,7 @@ const UserEditModal = ({ isOpen, onClose, userId, users, setUsers }) => {
         <ModalHeader>{t("global.editUser")}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {loading ? (
+          {isPending ? (
             <Spinner />
           ) : (
             <form onSubmit={handleOnSubmit}>
@@ -118,7 +146,7 @@ const UserEditModal = ({ isOpen, onClose, userId, users, setUsers }) => {
               <Button
                 type='submit'
                 colorScheme='telegram'
-                isLoading={updatingUser}
+                isLoading={isPending}
               >
                 {t("global.done")}
               </Button>

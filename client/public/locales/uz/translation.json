@@ -24,13 +24,18 @@
   "userPage": {
     "myCollections": "Mening kolleksiyalarim"
   },
+  "collections": {
+    "create": "Yaratish",
+    "not_created": "Yangi kolleksiya yaratilmadi!",
+    "created": "Yangi kolleksiya yaratildi!"
+  },
   "notFoundPage": {
     "pageNotFound": "Siz izlayotgan sahifa mavjud emas",
     "goToMainPage": "Asosiy sahifaga qaytish"
   },
   "nav": {
     "mainPage": "Asosiy",
-    "myPage": "Sahifam",
+    "profile": "Sahifam",
     "usersPage": "Foydalanuvchi",
     "aboutPage": "Loyiha haqida"
   },

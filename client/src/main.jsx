@@ -1,14 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.jsx";
-
-import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
-import theme from "./theme.js";
-import { store } from "./store";
-import { Provider } from "react-redux";
-import AuthProvider from "./providers/authProvider.jsx";
 import "./i18n.js";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
+import { Provider } from "react-redux";
+
+import App from "./App.jsx";
+import theme from "./theme.js";
+import { store } from "./store";
+import AuthProvider from "./context/Auth.jsx";
 
 const queryClient = new QueryClient();
 

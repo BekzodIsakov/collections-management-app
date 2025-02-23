@@ -1,5 +1,4 @@
-import React from "react";
-import { useTranslation } from "react-i18next";
+import { useState, useEffect, useRef } from "react";
 import {
   Box,
   Button,
@@ -21,44 +20,72 @@ import {
   Textarea,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { CloseIcon } from "@chakra-ui/icons";
+import { useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import { CloseIcon } from "@chakra-ui/icons";
 
-import { createCollection } from "../utils/data";
-import { OptionalFieldGenerator } from "@/components";
 import { useFetchTopics } from "@/hooks/topics";
-import { useCurrentUser } from "@/providers/currentUserProvider";
+import { useForm } from "../../../hooks/useForm";
+import { editCollection } from "../../../utils/data";
 
-const CreateCollectionModal = ({ isOpen, onClose, fetchUserCollections }) => {
-  const [title, setTitle] = React.useState("");
-  const [description, setDescription] = React.useState("");
-  const [selectedTopic, setSelectedTopic] = React.useState("");
-  const [selectedImage, setSelectedImage] = React.useState("");
-  const [optionalItemFields, setOptionalItemFields] = React.useState([]);
-  const [preview, setPreview] = React.useState("");
+export const CollectionEditModal = ({
+  isOpen,
+  onClose,
+  collection,
+  setCollection,
+}) => {
+  const [selectedImage, setSelectedImage] = useState("");
+  const [preview, setPreview] = useState("");
 
-  const fileInputRef = React.useRef(null);
+  const { title, description } = collection;
+  const topicId = collection?.topic._id;
 
-  const { currentUser } = useCurrentUser();
+  const [values, handleChange] = useForm({
+    title,
+    description,
+    topicId,
+  });
+
+  const fileInputRef = useRef(null);
 
   const { t } = useTranslation();
 
   const { topics, fetchTopics } = useFetchTopics();
 
-  // const { createCollection, loading, collection } = useCreateCollection();
+  const params = useParams();
 
-  const newCollection = useMutation({
-    mutationKey: ["createCollection"],
-    mutationFn: createCollection,
+  // const {
+  //   updatedCollection,
+  //   updateCollection,
+  //   loading: updatingCollection,
+  // } = useCollectionEdit();
+
+  const edit = useMutation({
+    mutationFn: (formData) => editCollection(params.collectionId, formData),
     onSuccess: () => {
-      fetchUserCollections(currentUser._id);
-      // console.log("success");
       onClose();
+      setPreview("");
     },
   });
 
   const dragNDropBg = useColorModeValue("white", "gray.800");
   const dragNDropBorderColor = useColorModeValue("gray.300", "gray.500");
+
+  function handleOnSubmit(e) {
+    e.preventDefault();
+    const formData = new FormData();
+
+    formData.append("title", values.title);
+    formData.append("description", values.description);
+    formData.append("topic", values.topicId);
+
+    if (selectedImage) {
+      formData.append("image", selectedImage);
+    }
+
+    edit.mutate(formData);
+  }
 
   function handleImageSelect(e) {
     if (!e.target.files || e.target.files.length === 0) {
@@ -74,30 +101,11 @@ const CreateCollectionModal = ({ isOpen, onClose, fetchUserCollections }) => {
     setSelectedImage("");
   }
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    const formData = new FormData();
-
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("topic", selectedTopic);
-    formData.append("author", currentUser._id);
-    formData.append("optionalItemFields", JSON.stringify(optionalItemFields));
-
-    if (selectedImage) {
-      formData.append("image", selectedImage);
-    }
-
-    newCollection.mutate(formData);
-
-    // createCollection(formData);
-  }
-
-  React.useEffect(() => {
+  useEffect(() => {
     fetchTopics();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!selectedImage) {
       setPreview(undefined);
       return;
@@ -109,35 +117,29 @@ const CreateCollectionModal = ({ isOpen, onClose, fetchUserCollections }) => {
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedImage]);
 
-  React.useEffect(() => {
-    if (topics.length) {
-      setSelectedTopic(topics[0]._id);
-    }
-  }, [topics]);
-
-  // React.useEffect(() => {
-  //   if (collection) {
-  //     fetchUserCollections(currentUser._id);
+  // useEffect(() => {
+  //   if (updatedCollection) {
+  //     setCollection(updatedCollection);
   //     onClose();
+  //     setPreview("");
   //   }
-  // }, [collection]);
+  // }, [updatedCollection]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} scrollBehavior={"inside"}>
       <ModalOverlay />
       <ModalContent mx='3' pb='3'>
-        <ModalHeader>{t("global.createNewCollection")}</ModalHeader>
+        <ModalHeader>{t("global.editCollection")}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleOnSubmit}>
             <Stack spacing='3' mb='7'>
               <FormControl>
-                <FormLabel>{t("global.title")}</FormLabel>
+                <FormLabel>{t("global.name")}</FormLabel>
                 <Input
                   name={"title"}
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
+                  value={values.title}
+                  onChange={handleChange}
                 />
               </FormControl>
 
@@ -145,9 +147,8 @@ const CreateCollectionModal = ({ isOpen, onClose, fetchUserCollections }) => {
                 <FormLabel>{t("global.description")}</FormLabel>
                 <Textarea
                   name={"description"}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  required
+                  value={values.description}
+                  onChange={handleChange}
                 ></Textarea>
               </FormControl>
 
@@ -155,9 +156,8 @@ const CreateCollectionModal = ({ isOpen, onClose, fetchUserCollections }) => {
                 <FormLabel>{t("global.topic")}</FormLabel>
                 <Select
                   name='selectedTopic'
-                  value={selectedTopic}
-                  onChange={(e) => setSelectedTopic(e.target.value)}
-                  required
+                  value={values.topicId}
+                  onChange={handleChange}
                 >
                   {topics.map((topic) => (
                     <option key={topic._id} value={topic._id}>
@@ -167,7 +167,7 @@ const CreateCollectionModal = ({ isOpen, onClose, fetchUserCollections }) => {
                 </Select>
               </FormControl>
 
-              <FormControl my='4'>
+              <FormControl mt={4}>
                 <Stack
                   direction={{ base: "column", md: "row" }}
                   h={{ base: preview ? "400" : "200", md: "200" }}
@@ -221,8 +221,8 @@ const CreateCollectionModal = ({ isOpen, onClose, fetchUserCollections }) => {
                         <Input
                           name='image'
                           onChange={handleImageSelect}
-                          type='file'
                           ref={fileInputRef}
+                          type='file'
                           height='100%'
                           width='100%'
                           position='absolute'
@@ -235,16 +235,13 @@ const CreateCollectionModal = ({ isOpen, onClose, fetchUserCollections }) => {
                       </Box>
                     </Box>
                   </Box>
-                  <Box
-                    flex={{ base: preview ? "1" : "0", md: "1" }}
-                    pos='relative'
-                  >
+                  <Box flex={{ base: preview ? "1" : "0", md: "1" }}>
                     <Image
                       src={preview}
                       width={preview ? "100%" : 0}
-                      height='100%'
-                      objectFit='cover'
-                      rounded='md'
+                      height={"100%"}
+                      objectFit={"cover"}
+                      rounded={"md"}
                     />
                     {preview && (
                       <IconButton
@@ -259,16 +256,11 @@ const CreateCollectionModal = ({ isOpen, onClose, fetchUserCollections }) => {
                   </Box>
                 </Stack>
               </FormControl>
-
-              <OptionalFieldGenerator
-                optionalItemFields={optionalItemFields}
-                setOptionalItemFields={setOptionalItemFields}
-              />
             </Stack>
             <Button
               type='submit'
               colorScheme='telegram'
-              isLoading={newCollection.isLoading}
+              isLoading={edit.isPending}
             >
               {t("global.done")}
             </Button>
@@ -278,5 +270,3 @@ const CreateCollectionModal = ({ isOpen, onClose, fetchUserCollections }) => {
     </Modal>
   );
 };
-
-export default CreateCollectionModal;

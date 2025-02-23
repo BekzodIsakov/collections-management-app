@@ -16,32 +16,28 @@ import {
   Avatar,
 } from "@chakra-ui/react";
 
-import { useAuth } from "../providers/authProvider";
+import { useAuth } from "../context/Auth";
 import { useNavData } from "./header/navData";
-import { useUserSignOut } from "../hooks/user";
+import { useMutation } from "@tanstack/react-query";
 
 const ChakraDrawer = ({
   isOpen,
   onClose,
   drawerBtnRef,
-  onSearchBarOpen,
+  // onSearchBarOpen,
   ...props
 }) => {
   const drawerContainerRef = useRef(null);
-  const { user, setToken, setUser } = useAuth();
-  const { loading, navData } = useNavData();
+  const { user, logout } = useAuth();
+  const { navData } = useNavData();
   const navigate = useNavigate();
-
-  const { signOut } = useUserSignOut();
-
   const { t } = useTranslation();
 
-  const handleSignOut = () => {
-    signOut();
-    navigate("/");
-    setToken(null);
-    setUser(null);
-  };
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["user_signout"],
+    mutationFn: logout,
+    onSuccess: () => navigate("/"),
+  });
 
   return (
     <div ref={drawerContainerRef}>
@@ -64,8 +60,7 @@ const ChakraDrawer = ({
                 <VStack gap={0} alignItems={"flex-start"}>
                   <Text fontWeight='medium'>{user.name}</Text>
                   <Text color='gray.500' fontSize='md'>
-                    {/* {user.email} */}
-                    john.mason@example.com
+                    {user.email || "john.mason@example.com"}
                   </Text>
                 </VStack>
               </VStack>
@@ -105,21 +100,10 @@ const ChakraDrawer = ({
 
           <DrawerFooter>
             <VStack align={"right"} alignItems={"flex-end"}>
-              {/* <ColorSwitch />
-
-              <Button
-                leftIcon={<SearchIcon />}
-                variant='solid'
-                onClick={onSearchBarOpen}
-              >
-                Search
-              </Button>
-
-              <LanguageSelect /> */}
               {user && (
                 <Button
-                  onClick={handleSignOut}
-                  isLoading={loading}
+                  onClick={mutate}
+                  isLoading={isPending}
                   loadingText={t("auth.signOut")}
                   colorScheme='red'
                   variant='outline'

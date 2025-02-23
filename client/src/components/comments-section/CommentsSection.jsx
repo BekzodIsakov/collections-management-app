@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   Box,
   HStack,
@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 
-import { useAuth } from "@/providers/authProvider";
+import { useAuth } from "../../context/Auth";
 import Comment from "./Comment";
 import Compose from "./Compose";
 
@@ -21,8 +21,8 @@ const CommentsSection = ({ itemId, comments, setComments }) => {
   const { t } = useTranslation();
   const commentsSectionBg = useColorModeValue("gray.50", "gray.700");
 
-  const [comment, setComment] = React.useState("");
-  const [sendingComment, setSendingComment] = React.useState(false);
+  const [comment, setComment] = useState("");
+  const [sendingComment, setSendingComment] = useState(false);
 
   function handleSendComment() {
     setSendingComment(true);
@@ -32,14 +32,14 @@ const CommentsSection = ({ itemId, comments, setComments }) => {
     });
   }
 
-  const handleReceivedComment = React.useCallback(
+  const handleReceivedComment = useCallback(
     (newComment) => {
       setComments((prevComments) => [...prevComments, newComment]);
     },
     [setComments]
   );
 
-  const handleEditComment = React.useCallback(
+  const handleEditComment = useCallback(
     ({ commentId, content }) => {
       const _comments = comments.map((comment) => {
         if (comment._id === commentId) {
@@ -57,7 +57,7 @@ const CommentsSection = ({ itemId, comments, setComments }) => {
     [setComments, comments]
   );
 
-  const handleDeleteComment = React.useCallback(
+  const handleDeleteComment = useCallback(
     (commentId) => {
       const _comments = comments.filter((c) => c._id !== commentId);
       setComments(_comments);
@@ -65,11 +65,11 @@ const CommentsSection = ({ itemId, comments, setComments }) => {
     [setComments, comments]
   );
 
-  const joinUser = React.useCallback(() => {
+  const joinUser = useCallback(() => {
     socket.emit("join", { userId: user.id, roomId: itemId });
   }, [itemId, user?.id]);
 
-  const handleLikeUnlikeItem = React.useCallback(
+  const handleLikeUnlikeItem = useCallback(
     ({ commentId, likes }) => {
       const _comments = comments.map((comment) => {
         if (comment._id === commentId) {
@@ -84,7 +84,7 @@ const CommentsSection = ({ itemId, comments, setComments }) => {
     [comments, setComments]
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     socket.connect();
 
     if (user) {

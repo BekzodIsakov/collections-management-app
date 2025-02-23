@@ -18,9 +18,9 @@ import {
   SearchModal,
   SearchButton,
   LanguageSelect,
-} from "@/components";
+} from "../index";
 import Persona from "../Persona";
-import { useAuth } from "../../providers/authProvider";
+import { useAuth } from "../../context/Auth";
 import { useNavData } from "./navData";
 import ChakraDrawer from "../Drawer";
 import { GitHubLink } from "../GithubLink";
@@ -68,7 +68,7 @@ const Header = () => {
                   key={index}
                   as={NavLink}
                   to={link.to}
-                  _activeLink={{ fontWeight: "extrabold", color: 'blue.600' }}
+                  _activeLink={{ fontWeight: "extrabold", color: "blue.600" }}
                 >
                   {link.label}
                 </ChakraLink>

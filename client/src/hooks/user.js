@@ -1,79 +1,79 @@
 import axios from "axios";
 import React from "react";
-import { useAuth } from "../providers/authProvider";
+import { useAuth } from "../context/Auth";
 import { useLocation, useParams } from "react-router-dom";
 
-export const useUserSignIn = () => {
-  const [data, setData] = React.useState(null);
-  const [loading, setLoading] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState("");
+// export const useUserSignIn = () => {
+//   const [data, setData] = React.useState(null);
+//   const [loading, setLoading] = React.useState(false);
+//   const [errorMessage, setErrorMessage] = React.useState("");
 
-  async function onSignIn(userCredentails) {
-    try {
-      setLoading(true);
-      const response = await axios.post(
-        `${import.meta.env.VITE_URL}/users/signin`,
-        userCredentails,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      setData(response.data);
-    } catch (error) {
-      setErrorMessage(error.response.data.message);
-    } finally {
-      setLoading(false);
-    }
-  }
+//   async function onSignIn(userCredentails) {
+//     try {
+//       setLoading(true);
+//       const response = await axios.post(
+//         `${import.meta.env.VITE_URL}/users/signin`,
+//         userCredentails,
+//         {
+//           headers: { "Content-Type": "application/json" },
+//         }
+//       );
+//       setData(response.data);
+//     } catch (error) {
+//       setErrorMessage(error.response.data.message);
+//     } finally {
+//       setLoading(false);
+//     }
+//   }
 
-  return { data, loading, errorMessage, onSignIn };
-};
+//   return { data, loading, errorMessage, onSignIn };
+// };
 
-export const useUserSignUp = () => {
-  const [data, setData] = React.useState(null);
-  const [loading, setLoading] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState("");
+// export const useUserSignUp = () => {
+//   const [data, setData] = React.useState(null);
+//   const [loading, setLoading] = React.useState(false);
+//   const [errorMessage, setErrorMessage] = React.useState("");
 
-  async function onSignUp(userCredentails) {
-    try {
-      setLoading(true);
-      const response = await axios.post(
-        `${import.meta.env.VITE_URL}/users/signup`,
-        userCredentails,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      setData(response.data);
-    } catch (error) {
-      setErrorMessage(error.response.data.message);
-    } finally {
-      setLoading(false);
-    }
-  }
+//   async function onSignUp(userCredentails) {
+//     try {
+//       setLoading(true);
+//       const response = await axios.post(
+//         `${import.meta.env.VITE_URL}/users/signup`,
+//         userCredentails,
+//         {
+//           headers: { "Content-Type": "application/json" },
+//         }
+//       );
+//       setData(response.data);
+//     } catch (error) {
+//       setErrorMessage(error.response.data.message);
+//     } finally {
+//       setLoading(false);
+//     }
+//   }
 
-  return { data, loading, errorMessage, onSignUp };
-};
+//   return { data, loading, errorMessage, onSignUp };
+// };
 
-export const useUserSignOut = () => {
-  const [loading, setLoading] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState("");
+// export const useUserSignOut = () => {
+//   const [loading, setLoading] = React.useState(false);
+//   const [errorMessage, setErrorMessage] = React.useState("");
 
-  async function signOut() {
-    try {
-      setLoading(true);
-      await axios.post(`${import.meta.env.VITE_URL}/users/signout`, {
-        headers: { "Content-Type": "application/json" },
-      });
-    } catch (error) {
-      setErrorMessage(error.response.data.message);
-    } finally {
-      setLoading(false);
-    }
-  }
+//   async function signOut() {
+//     try {
+//       setLoading(true);
+//       await axios.post(`${import.meta.env.VITE_URL}/users/signout`, {
+//         headers: { "Content-Type": "application/json" },
+//       });
+//     } catch (error) {
+//       setErrorMessage(error.response.data.message);
+//     } finally {
+//       setLoading(false);
+//     }
+//   }
 
-  return { loading, errorMessage, signOut };
-};
+//   return { loading, errorMessage, signOut };
+// };
 
 export const useFetchUser = () => {
   const [loading, setLoading] = React.useState(false);
@@ -166,32 +166,32 @@ export const useDeleteUser = () => {
   };
 };
 
-export const useUpdateUser = () => {
-  const [loading, setLoading] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState("");
-  const [user, setUser] = React.useState(null);
+// export const useUpdateUser = () => {
+//   const [loading, setLoading] = React.useState(false);
+//   const [errorMessage, setErrorMessage] = React.useState("");
+//   const [user, setUser] = React.useState(null);
 
-  async function updateUser(userId, update) {
-    try {
-      setLoading(true);
-      const result = await axios.patch(
-        `${import.meta.env.VITE_URL}/users/${userId}`,
-        update,
-        { headers: { "Content-Type": "application/json" } }
-      );
-      setUser(result.data);
-    } catch (error) {
-      setErrorMessage(error.response.data.message);
-    } finally {
-      setLoading(false);
-    }
-  }
+//   async function updateUser(userId, update) {
+//     try {
+//       setLoading(true);
+//       const result = await axios.patch(
+//         `${import.meta.env.VITE_URL}/users/${userId}`,
+//         update,
+//         { headers: { "Content-Type": "application/json" } }
+//       );
+//       setUser(result.data);
+//     } catch (error) {
+//       setErrorMessage(error.response.data.message);
+//     } finally {
+//       setLoading(false);
+//     }
+//   }
 
-  return {
-    updateUser,
-    loading,
-    errorMessage,
-    user,
-    setUser,
-  };
-};
+//   return {
+//     updateUser,
+//     loading,
+//     errorMessage,
+//     user,
+//     setUser,
+//   };
+// };

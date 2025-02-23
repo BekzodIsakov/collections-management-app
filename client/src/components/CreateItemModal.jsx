@@ -20,7 +20,7 @@ import {
 
 import { useFetchAllTags } from "@/hooks/tags";
 import { useCreateItem } from "@/hooks/items";
-import { useCurrentUser } from "@/providers/currentUserProvider";
+import { useCurrentUser } from "@/context/currentUserProvider";
 
 const CreateItemModal = ({
   isOpen,
